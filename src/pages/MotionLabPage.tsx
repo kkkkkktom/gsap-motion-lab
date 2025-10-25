@@ -1,35 +1,24 @@
-import { useElementStore } from "../store/useElementStore";
+import Toolbar from "../components/Toolbar";
 import CanvasArea from "../components/CanvasArea";
+import PropertyPanel from "../components/PropertyPanel";
+import { useElementStore } from "../store/useElementStore";
 
 export default function MotionLabPage() {
   const { addRect } = useElementStore();
 
   return (
     <div className="motion-lab">
-      <div className="toolbar">
-        <div className="logo">GSAP Motion Lab</div>
-        <div className="toolbar-actions">
-          <button className="btn" onClick={addRect}>新建矩形</button>
-          <button className="btn">播放</button>
-          <button className="btn">暂停</button>
-          <button className="btn btn-primary">AI 生成</button>
-          <button className="btn">导出</button>
-        </div>
-        <div className="toolbar-right">
-          <button className="icon-btn" aria-label="设置">⚙️</button>
-          <button className="icon-btn" aria-label="帮助">❔</button>
-        </div>
-      </div>
+      <Toolbar
+        onNewRect={addRect}
+        onPlay={() => console.log("播放")}
+        onPause={() => console.log("暂停")}
+        onOpenAI={() => console.log("AI 生成")}
+        onExport={() => console.log("导出配置")}
+      />
 
       <div className="main">
-        {/* 画布区改为组件，保持现有功能 */}
         <CanvasArea />
-
-        {/* 右侧属性区先保持静态占位，后续再替换为组件 */}
-        <div className="property-panel">
-          <h3>动画属性</h3>
-          <div className="muted">未选中元素</div>
-        </div>
+        <PropertyPanel />
       </div>
 
       <div className="timeline">
