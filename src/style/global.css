@@ -1,0 +1,76 @@
+:root {
+  --bg: #101014;
+  --panel: #1a1c22;
+  --panel-2: #20222a;
+  --line: #2b2e36;
+  --text: #e8eaf1;
+  --muted: #9aa0aa;
+  --primary: #00e0ff;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.btn {
+  background: #2b2f37; color: var(--text); border: 1px solid var(--line);
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+}
+.btn:hover { border-color: var(--primary); }
+.btn-primary { background: linear-gradient(135deg, #00ffff, #0077ff); color: #000; border: none; }
+
+.icon-btn { background: transparent; color: var(--text); border: none; font-size: 16px; padding: 6px; cursor: pointer; }
+
+.motion-lab { display: flex; flex-direction: column; height: 100vh; }
+
+/* 顶部栏 */
+.toolbar {
+  display: grid; grid-template-columns: 240px 1fr 120px; align-items: center; gap: 12px;
+  padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
+}
+.toolbar .logo { font-weight: 700; letter-spacing: .3px; }
+.toolbar .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.toolbar .toolbar-right { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* 主体两栏 */
+.main { flex: 1; display: grid; grid-template-columns: 1fr 320px; min-height: 0; }
+
+/* 画布区 */
+.canvas-area {
+  position: relative; background: #111319; border-right: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+}
+.canvas-placeholder {
+  width: 80%; height: 70%;
+  border: 2px dashed #2d3340; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; color: var(--muted);
+}
+
+/* 右侧属性面板 */
+.property-panel { background: var(--panel-2); border-left: 1px solid var(--line); padding: 12px; overflow: auto; }
+.property-panel h3 { margin: 8px 0 12px; }
+.muted { color: var(--muted); }
+
+/* 时间轴 */
+.timeline { border-top: 1px solid var(--line); background: #0e0f14; height: 180px; }
+.timeline-header { position: relative; display: grid; grid-template-columns: 120px 1fr; border-bottom: 1px solid var(--line); height: 32px; }
+.timeline-header .label { display:flex; align-items:center; justify-content:center; font-size: 12px; color: var(--muted); }
+.ruler { position: relative; }
+.ruler .tick { position: absolute; top: 0; height: 100%; border-left: 1px solid #24262f; }
+.ruler .tick span { position: absolute; top: 4px; left: 4px; font-size: 12px; color: var(--muted); }
+
+.tracks { display: grid; grid-template-columns: 120px 1fr; height: calc(100% - 32px); }
+.track-label { display:flex; align-items:center; justify-content:center; font-size: 12px; color: var(--muted); border-right: 1px solid var(--line); }
+.track-lane { position: relative; overflow: auto; }
+.clip {
+  position: absolute; top: 12px; height: 40px;
+  background: rgba(0, 224, 255, .15);
+  border: 1px solid rgba(0, 224, 255, .6);
+  border-radius: 6px; display: flex; align-items: center; padding: 0 8px;
+}
+.clip-name { font-size: 12px; color: var(--text); }
