@@ -9,6 +9,11 @@ export interface ElementNode {
   rotation: number;
   opacity: number;
   isSelected?: boolean;
+  initialX: number;
+  initialY: number;
+  animDistanceX: number;
+  animDistanceY: number;
+  animDuration: number;
 }
 
 interface ElementState {
@@ -16,14 +21,18 @@ interface ElementState {
   selectedId?: string;
   selectedElement?: ElementNode;
   addRect: () => void;
-  update: (id: string, patch: Partial<ElementNode>) => void;
+  update: (
+    id: string,
+    patch: Partial<ElementNode>,
+    options?: { syncInitial?: boolean }
+  ) => void;
   select: (id?: string) => void;
 }
 
 let idCounter = 0;
 const nextId = () => `el_${++idCounter}`;
 
-export const useElementStore = create<ElementState>((set, get) => ({
+export const useElementStore = create<ElementState>((set) => ({
   elements: {},
   selectedId: undefined,
   selectedElement: undefined,
@@ -40,13 +49,31 @@ export const useElementStore = create<ElementState>((set, get) => ({
         rotation: 0,
         opacity: 0.9,
         isSelected: false,
+        initialX: 100 + idCounter * 20,
+        initialY: 100 + idCounter * 20,
+        animDistanceX: 280,
+        animDistanceY: 0,
+        animDuration: 2,
       };
       return { elements: { ...s.elements, [id]: el }, selectedId: id, selectedElement: el };
     }),
 
-  update: (id, patch) =>
+  update: (id, patch, options) =>
     set((s) => {
-      const updated = { ...s.elements[id], ...patch };
+      const current = s.elements[id];
+      if (!current) return {};
+
+      const updated: ElementNode = { ...current, ...patch };
+
+      if (options?.syncInitial) {
+        if (patch.x !== undefined) {
+          updated.initialX = patch.x;
+        }
+        if (patch.y !== undefined) {
+          updated.initialY = patch.y;
+        }
+      }
+
       return {
         elements: { ...s.elements, [id]: updated },
         selectedElement: s.selectedId === id ? updated : s.selectedElement,

@@ -5,26 +5,41 @@ import { useElementStore } from "../store/useElementStore";
 const CanvasArea: React.FC = () => {
   const { elements, update, select } = useElementStore();
 
+  const elementSignature = Object.keys(elements).join("|");
+
   useEffect(() => {
-    interact(".canvas-el").unset(); // 清理旧事件
+    const ids = elementSignature.length > 0 ? elementSignature.split("|") : [];
+    const selectors = ids.map((id) => ({ id, selector: `[data-el='${id}']` }));
 
-    Object.values(elements).forEach((el) => {
-      const selector = `[data-el='${el.id}']`;
-
+    selectors.forEach(({ id, selector }) => {
       interact(selector)
         .draggable({
           listeners: {
             move(event) {
-              update(el.id, {
-                x: el.x + event.dx,
-                y: el.y + event.dy,
-              });
+              const { elements: currentElements } = useElementStore.getState();
+              const current = currentElements[id];
+              if (!current) return;
+
+              update(
+                id,
+                {
+                  x: current.x + event.dx,
+                  y: current.y + event.dy,
+                },
+                { syncInitial: true }
+              );
             },
           },
         })
-        .on("click", () => select(el.id));
+        .on("click", () => select(id));
     });
-  }, [elements, update, select]);
+
+    return () => {
+      selectors.forEach(({ selector }) => {
+        interact(selector).unset();
+      });
+    };
+  }, [elementSignature, update, select]);
 
   return (
     <div className="canvas-area">
