@@ -1,5 +1,5 @@
 import React from "react";
-import { useElementStore } from "../store/useElementStore";
+import { useElementStore, type ElementNode } from "../store/useElementStore";
 
 const PropertyPanel: React.FC = () => {
   const { selectedElement, update } = useElementStore();
@@ -13,8 +13,11 @@ const PropertyPanel: React.FC = () => {
     );
   }
 
-  const handleChange = (key: keyof typeof selectedElement, value: number) => {
-    update(selectedElement.id, { [key]: value });
+  const handleChange = (key: keyof ElementNode, value: number) => {
+    const syncInitial = key === "x" || key === "y";
+    update(selectedElement.id, { [key]: value } as Partial<ElementNode>, {
+      syncInitial,
+    });
   };
 
   return (

@@ -1,17 +1,63 @@
+import { useCallback } from "react";
+import gsap from "gsap";
 import Toolbar from "../components/Toolbar";
 import CanvasArea from "../components/CanvasArea";
 import PropertyPanel from "../components/PropertyPanel";
 import { useElementStore } from "../store/useElementStore";
+import { useTimelineStore } from "../store/useTimelineStore";
 
 export default function MotionLabPage() {
-  const { addRect } = useElementStore();
+  const addRect = useElementStore((s) => s.addRect);
+  const selectedElement = useElementStore((s) => s.selectedElement);
+  const updateElement = useElementStore((s) => s.update);
+
+  const { getTween, setTween, stopTween } = useTimelineStore((s) => ({
+    getTween: s.getTween,
+    setTween: s.setTween,
+    stopTween: s.stopTween,
+  }));
+
+  const handlePlay = useCallback(() => {
+    if (!selectedElement) return;
+
+    const { id, initialX, initialY, animDistanceX, animDistanceY, animDuration } = selectedElement;
+
+    stopTween(id);
+
+    updateElement(id, { x: initialX, y: initialY }, { syncInitial: false });
+
+    const animatedState = { x: initialX, y: initialY };
+    const targetX = initialX + animDistanceX;
+    const targetY = initialY + animDistanceY;
+
+    const tween = gsap.to(animatedState, {
+      x: targetX,
+      y: targetY,
+      duration: animDuration,
+      ease: "power1.inOut",
+      onUpdate: () => {
+        updateElement(id, { x: animatedState.x, y: animatedState.y }, { syncInitial: false });
+      },
+      onComplete: () => {
+        updateElement(id, { x: targetX, y: targetY }, { syncInitial: false });
+      },
+    });
+
+    setTween(id, tween);
+  }, [selectedElement, stopTween, setTween, updateElement]);
+
+  const handlePause = useCallback(() => {
+    if (!selectedElement) return;
+    const tween = getTween(selectedElement.id);
+    tween?.pause();
+  }, [selectedElement, getTween]);
 
   return (
     <div className="motion-lab">
       <Toolbar
         onNewRect={addRect}
-        onPlay={() => console.log("播放")}
-        onPause={() => console.log("暂停")}
+        onPlay={handlePlay}
+        onPause={handlePause}
         onOpenAI={() => console.log("AI 生成")}
         onExport={() => console.log("导出配置")}
       />
