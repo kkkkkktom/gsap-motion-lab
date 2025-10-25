@@ -14,6 +14,7 @@ export interface ElementNode {
 interface ElementState {
   elements: Record<string, ElementNode>;
   selectedId?: string;
+  selectedElement?: ElementNode;
   addRect: () => void;
   update: (id: string, patch: Partial<ElementNode>) => void;
   select: (id?: string) => void;
@@ -22,9 +23,10 @@ interface ElementState {
 let idCounter = 0;
 const nextId = () => `el_${++idCounter}`;
 
-export const useElementStore = create<ElementState>((set) => ({
+export const useElementStore = create<ElementState>((set, get) => ({
   elements: {},
   selectedId: undefined,
+  selectedElement: undefined,
 
   addRect: () =>
     set((s) => {
@@ -39,22 +41,30 @@ export const useElementStore = create<ElementState>((set) => ({
         opacity: 0.9,
         isSelected: false,
       };
-      return { elements: { ...s.elements, [id]: el }, selectedId: id };
+      return { elements: { ...s.elements, [id]: el }, selectedId: id, selectedElement: el };
     }),
 
   update: (id, patch) =>
-    set((s) => ({
-      elements: { ...s.elements, [id]: { ...s.elements[id], ...patch } },
-    })),
+    set((s) => {
+      const updated = { ...s.elements[id], ...patch };
+      return {
+        elements: { ...s.elements, [id]: updated },
+        selectedElement: s.selectedId === id ? updated : s.selectedElement,
+      };
+    }),
 
   select: (id) =>
-    set((s) => ({
-      selectedId: id,
-      elements: Object.fromEntries(
-        Object.entries(s.elements).map(([key, val]) => [
-          key,
-          { ...val, isSelected: key === id },
-        ])
-      ),
-    })),
+    set((s) => {
+      const selected = id ? s.elements[id] : undefined;
+      return {
+        selectedId: id,
+        selectedElement: selected,
+        elements: Object.fromEntries(
+          Object.entries(s.elements).map(([key, val]) => [
+            key,
+            { ...val, isSelected: key === id },
+          ])
+        ),
+      };
+    }),
 }));

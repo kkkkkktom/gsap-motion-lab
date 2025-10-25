@@ -80,4 +80,30 @@ body {
   stroke-width: 2px;
 }
 
+.property-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #1a1b1f;
+  color: #eee;
+  padding: 16px;
+
+  .prop-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    label {
+      font-size: 14px;
+    }
+    input {
+      width: 80px;
+      background: #2a2b31;
+      border: 1px solid #333;
+      border-radius: 4px;
+      color: #fff;
+      padding: 2px 6px;
+      text-align: right;
+    }
+  }
+}
 
