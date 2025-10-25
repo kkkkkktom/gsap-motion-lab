@@ -1,11 +1,7 @@
 import { create } from "zustand";
 
-export type ElementType = "rect" | "text" | "image";
-
 export interface ElementNode {
   id: string;
-  type: ElementType;
-  name: string;
   x: number;
   y: number;
   width: number;
@@ -23,8 +19,8 @@ interface ElementState {
   select: (id?: string) => void;
 }
 
-let _id = 0;
-const nextId = () => `el_${++_id}`;
+let idCounter = 0;
+const nextId = () => `el_${++idCounter}`;
 
 export const useElementStore = create<ElementState>((set) => ({
   elements: {},
@@ -35,10 +31,8 @@ export const useElementStore = create<ElementState>((set) => ({
       const id = nextId();
       const el: ElementNode = {
         id,
-        type: "rect",
-        name: `Rect_${_id}`,
-        x: 100 + _id * 20,
-        y: 100 + _id * 20,
+        x: 100 + idCounter * 20,
+        y: 100 + idCounter * 20,
         width: 160,
         height: 100,
         rotation: 0,
